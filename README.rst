@@ -1,7 +1,7 @@
 sentry-zabbix
 =============
 
-An extension for Sentry to send errors metrics to Zabbix; shamelessly based on (sentry-statsd)[https://github.com/dreadatour/sentry-statsd].
+An extension for Sentry to send errors metrics to Zabbix; shamelessly based on sentry-statsd_.
 
 Install
 -------
@@ -22,3 +22,5 @@ Go to your project's configuration page (Projects -> [Project]) and select the
 
 After installing and configuring, make sure to restart sentry-worker for the
 changes to take into effect.
+
+.. _sentry-statsd: https://github.com/dreadatour/sentry-statsd
