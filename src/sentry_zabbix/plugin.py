@@ -7,6 +7,9 @@ import socket
 from sentry.plugins import Plugin
 from zbxsend import Metric, send_to_zabbix
 
+import logging
+log = logging.getLogger('sentry')
+
 import sentry_zabbix
 from sentry_zabbix.forms import ZabbixOptionsForm
 
@@ -47,9 +50,11 @@ class ZabbixPlugin(Plugin):
         host = self.get_option('host', group.project)
         port = self.get_option('port', group.project)
         prefix = self.get_option('prefix', group.project)
-        prefix = '%s.%%s[%s]' % (prefix, group.project.slug)
+        prefix = '%s.%s[%%s]' % (prefix, group.project.slug)
 
         hostname = socket.gethostname()
+
+        log.info('got event %s', prefix)
 
         metrics = []
 
