@@ -47,18 +47,18 @@ class ZabbixPlugin(Plugin):
         host = self.get_option('host', group.project)
         port = self.get_option('port', group.project)
         prefix = self.get_option('prefix', group.project)
-        prefix = '%s[%s]' % (prefix, group.project.slug)
+        prefix = '%s.%%s[%s]' % (prefix, group.project.slug)
 
         hostname = socket.gethostname()
 
         metrics = []
 
         metrics.append(
-            Metric(hostname, '%s.count' % prefix, group.event_set.count())
+            Metric(hostname, prefix % 'count', group.event_set.count())
         )
 
         metrics.append(
-            Metric(hostname, '%s.level' % prefix, group.get_level_display())
+            Metric(hostname, prefix % 'level', group.get_level_display())
         )
 
         send_to_zabbix(metrics, host, port)
