@@ -60,9 +60,9 @@ class ZabbixPlugin(Plugin):
         metrics = []
 
         metrics.append(
-            Metric(hostname, prefix % 'count', group.event_set.count(), now)
+            Metric(hostname, prefix % 'event', 1, now)
         )
 
-        log.info('will send %s to zabbix', prefix % 'count')
+        log.info('will send %s to zabbix', prefix % 'event')
 
         send_to_zabbix(metrics, host, port)
