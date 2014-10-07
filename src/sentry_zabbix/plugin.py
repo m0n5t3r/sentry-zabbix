@@ -53,16 +53,17 @@ class ZabbixPlugin(Plugin):
         host = self.get_option('server_host', group.project)
         port = self.get_option('server_port', group.project)
         prefix = self.get_option('prefix', group.project)
-        prefix = '%s.%%s[%s]' % (prefix, group.project.slug)
+        template = '%s.%%s[%s]' % (prefix, group.project.slug)
 
         hostname = self.get_option('hostname', group.project) or socket.gethostname()
+        label = template % group.get_level_display().lower()
 
         metrics = []
 
         metrics.append(
-            Metric(hostname, prefix % 'event', 1, now)
+            Metric(hostname, label, 1, now)
         )
 
-        log.info('will send %s to zabbix', prefix % 'event')
+        log.info('will send %s to zabbix', label)
 
         send_to_zabbix(metrics, host, port)
