@@ -9,6 +9,10 @@
 ._*
 *.swp
 
+# distutils dirs
+dist/*
+build/*
+
 # hidden files
 .*
 # except these
