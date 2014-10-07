@@ -4,13 +4,15 @@ sentry_zabbix.plugin
 """
 
 import socket
+import logging
+import sentry_zabbix
+import time
+
 from sentry.plugins import Plugin
 from zbxsend import Metric, send_to_zabbix
 
-import logging
 log = logging.getLogger('sentry')
 
-import sentry_zabbix
 from sentry_zabbix.forms import ZabbixOptionsForm
 
 
@@ -47,17 +49,18 @@ class ZabbixPlugin(Plugin):
         if not self.is_configured(group.project):
             return
 
-        host = self.get_option('host', group.project)
-        port = self.get_option('port', group.project)
+        now = int(time.time())
+        host = self.get_option('server_host', group.project)
+        port = self.get_option('server_port', group.project)
         prefix = self.get_option('prefix', group.project)
         prefix = '%s.%%s[%s]' % (prefix, group.project.slug)
 
-        hostname = socket.gethostname()
+        hostname = self.get_option('hostname', group.project) or socket.gethostname()
 
         metrics = []
 
         metrics.append(
-            Metric(hostname, prefix % 'count', group.event_set.count())
+            Metric(hostname, prefix % 'count', group.event_set.count(), now)
         )
 
         log.info('will send %s to zabbix', prefix % 'count')
