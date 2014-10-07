@@ -40,7 +40,7 @@ class ZabbixPlugin(Plugin):
         Check if plugin is configured.
         """
         params = self.get_option
-        return bool(params('host', project) and params('port', project))
+        return bool(params('server_host', project) and params('server_port', project))
 
     def post_process(self, group, event, is_new, is_sample, **kwargs):
         """
