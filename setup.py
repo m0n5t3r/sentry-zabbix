@@ -12,7 +12,7 @@ f.close()
 
 setup(
     name='sentry-zabbix',
-    version='0.0.8',
+    version='0.0.9',
     author='Sabin Iacob',
     author_email='iacobs+pypi@gmail.com',
     url='http://github.com/m0n5t3r/sentry-zabbix',

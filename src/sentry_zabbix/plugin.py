@@ -8,6 +8,9 @@ import logging
 import sentry_zabbix
 import time
 
+from datetime import timedelta
+from django.utils import timezone
+
 from sentry.plugins import Plugin
 from sentry.constants import STATUS_UNRESOLVED, STATUS_RESOLVED
 from sentry.tasks.post_process import plugin_post_process_group
@@ -56,20 +59,27 @@ class ZabbixPlugin(Plugin):
         port = self.get_option('server_port', group.project)
         prefix = self.get_option('prefix', group.project)
         hostname = self.get_option('hostname', group.project) or socket.gethostname()
+        resolve_age = group.project.get_option('sentry:resolve_age', None)
 
         now = int(time.time())
         template = '%s.%%s[%s]' % (prefix, group.project.slug)
 
         level = group.get_level_display()
         label = template % level
-        num_events = group.project.group_set.filter(status=STATUS_UNRESOLVED).count()
 
-        metrics = []
+        groups = group.project.group_set.filter(status=STATUS_UNRESOLVED)
 
-        metrics.append(Metric(hostname, label, num_events, now))
+        if resolve_age:
+            oldest = timezone.now() - timedelta(hours=int(resolve_age))
+            groups = groups.filter(last_seen__gt=oldest)
+
+        num_errors = groups.count()
+
+        metric = Metric(hostname, label, num_errors, now)
+
         log.info('will send %s to zabbix', label)
 
-        send_to_zabbix(metrics, host, port)
+        send_to_zabbix(metric, host, port)
 
 
 def _send_to_zabbix(instance, created, **kwargs):
