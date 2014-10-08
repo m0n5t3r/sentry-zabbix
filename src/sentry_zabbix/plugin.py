@@ -79,7 +79,7 @@ class ZabbixPlugin(Plugin):
 
         log.info('will send %s to zabbix', label)
 
-        send_to_zabbix(metric, host, port)
+        send_to_zabbix([metric], host, port)
 
 
 def _send_to_zabbix(instance, created, **kwargs):
