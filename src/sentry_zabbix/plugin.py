@@ -9,11 +9,14 @@ import sentry_zabbix
 import time
 
 from sentry.plugins import Plugin
+from sentry.constants import STATUS_UNRESOLVED, STATUS_RESOLVED
+from sentry.tasks.post_process import plugin_post_process_group
+
 from zbxsend import Metric, send_to_zabbix
 
-log = logging.getLogger('sentry')
-
 from sentry_zabbix.forms import ZabbixOptionsForm
+
+log = logging.getLogger('root')
 
 
 class ZabbixPlugin(Plugin):
@@ -49,21 +52,32 @@ class ZabbixPlugin(Plugin):
         if not self.is_configured(group.project):
             return
 
-        now = int(time.time())
         host = self.get_option('server_host', group.project)
         port = self.get_option('server_port', group.project)
         prefix = self.get_option('prefix', group.project)
+        hostname = self.get_option('hostname', group.project) or socket.gethostname()
+
+        now = int(time.time())
         template = '%s.%%s[%s]' % (prefix, group.project.slug)
 
-        hostname = self.get_option('hostname', group.project) or socket.gethostname()
-        label = template % group.get_level_display().lower()
+        level = group.get_level_display()
+        label = template % level
+        num_events = group.project.group_set.filter(status=STATUS_UNRESOLVED).count()
 
         metrics = []
 
-        metrics.append(
-            Metric(hostname, label, 1, now)
-        )
-
+        metrics.append(Metric(hostname, label, num_events, now))
         log.info('will send %s to zabbix', label)
 
         send_to_zabbix(metrics, host, port)
+
+
+def _send_to_zabbix(instance, created, **kwargs):
+    if instance.status == STATUS_RESOLVED:
+        plugin_post_process_group.delay('zabbix', instance, None, False, False)
+
+
+from sentry.models import Group
+from django.db.models.signals import post_save
+
+post_save.connect(_send_to_zabbix, sender=Group)
