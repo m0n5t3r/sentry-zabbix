@@ -74,7 +74,12 @@ class ZabbixPlugin(Plugin):
 
 def _send_to_zabbix(instance, created, **kwargs):
     if instance.status == STATUS_RESOLVED:
-        plugin_post_process_group.delay('zabbix', instance)
+        extra = {
+            'event': None,
+            'is_new': False,
+            'is_sample': False,
+        }
+        plugin_post_process_group.delay('zabbix', instance, **extra)
 
 
 from sentry.models import Group
