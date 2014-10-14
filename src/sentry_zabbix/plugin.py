@@ -73,7 +73,7 @@ class ZabbixPlugin(Plugin):
             oldest = timezone.now() - timedelta(hours=int(resolve_age))
             groups = groups.filter(last_seen__gt=oldest)
 
-        num_errors = groups.count()
+        num_errors = groups.filter(level=group.level).count()
 
         metric = Metric(hostname, label, num_errors, now)
 
