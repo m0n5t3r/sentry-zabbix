@@ -77,7 +77,7 @@ class ZabbixPlugin(Plugin):
 
         metric = Metric(hostname, label, num_errors, now)
 
-        log.info('will send %s to zabbix', label)
+        log.debug('will send %s=%s to zabbix', label, num_errors)
 
         send_to_zabbix([metric], host, port)
 
