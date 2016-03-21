@@ -11,9 +11,10 @@ import time
 from datetime import timedelta
 from django.utils import timezone
 
-from sentry.plugins import Plugin
-from sentry.constants import STATUS_UNRESOLVED, STATUS_RESOLVED
-from sentry.tasks.post_process import plugin_post_process_group
+from sentry.plugins.bases.notify import NotificationPlugin
+from sentry.constants import STATUS_UNRESOLVED
+
+from sentry.models import Activity
 
 from zbxsend import Metric, send_to_zabbix
 
@@ -22,7 +23,7 @@ from sentry_zabbix.forms import ZabbixOptionsForm
 log = logging.getLogger('root')
 
 
-class ZabbixPlugin(Plugin):
+class ZabbixPlugin(NotificationPlugin):
     """
     Sentry plugin to send error counts to Zabbix.
     """
@@ -81,18 +82,8 @@ class ZabbixPlugin(Plugin):
 
         send_to_zabbix([metric], host, port)
 
+    def notify_about_activity(self, activity):
+        if activity.type not in (Activity.SET_RESOLVED, Activity.SET_UNRESOLVED):
+            return
 
-def _send_to_zabbix(instance, created, **kwargs):
-    if instance.status == STATUS_RESOLVED:
-        extra = {
-            'event': None,
-            'is_new': False,
-            'is_sample': False,
-        }
-        plugin_post_process_group.delay('zabbix', instance, **extra)
-
-
-from sentry.models import Group
-from django.db.models.signals import post_save
-
-post_save.connect(_send_to_zabbix, sender=Group)
+        self.post_process(group=activity.group, event=None, is_new=False, is_sample=False)
