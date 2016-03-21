@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'sentry>=5.3.3',
+    'sentry>=8.0.0',
     'zbxsend',
 ]
 
@@ -12,7 +12,7 @@ f.close()
 
 setup(
     name='sentry-zabbix',
-    version='0.0.11',
+    version='0.0.13',
     author='Sabin Iacob',
     author_email='iacobs+pypi@gmail.com',
     url='http://github.com/m0n5t3r/sentry-zabbix',
