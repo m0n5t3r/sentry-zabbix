@@ -4,12 +4,12 @@ sentry_zabbix.plugin
 """
 
 import socket
-import logging
 import sentry_zabbix
 import time
 
 from datetime import timedelta
 from django.utils import timezone
+from django.utils.log import getLogger
 
 from sentry.plugins.bases.notify import NotificationPlugin
 from sentry.constants import STATUS_UNRESOLVED
@@ -20,7 +20,7 @@ from zbxsend import Metric, send_to_zabbix
 
 from sentry_zabbix.forms import ZabbixOptionsForm
 
-log = logging.getLogger('root')
+log = getLogger()
 
 
 class ZabbixPlugin(NotificationPlugin):
@@ -78,7 +78,7 @@ class ZabbixPlugin(NotificationPlugin):
 
         metric = Metric(hostname, label, num_errors, now)
 
-        log.debug('will send %s=%s to zabbix', label, num_errors)
+        log.info('will send %s=%s to zabbix', label, num_errors)
 
         send_to_zabbix([metric], host, port)
 
@@ -86,5 +86,5 @@ class ZabbixPlugin(NotificationPlugin):
         if activity.type not in (Activity.SET_RESOLVED, Activity.SET_UNRESOLVED):
             return
 
-        log.debug('got activity type %s for group %s', activity.type, activity.group)
+        log.info('got activity type %s for group %s', activity.type, activity.group)
         self.post_process(group=activity.group, event=None, is_new=False, is_sample=False)
