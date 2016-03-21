@@ -5,6 +5,8 @@ An extension for Sentry to send event counts to Zabbix; shamelessly based on sen
 This will send keys formatted like ``<prefix>.<level>[<project>]`` (e.g. 
 ``sentry.error[my-thing]``), which will need to be configured as items in Zabbix.
 
+If you run a Sentry version older than 8, use sentry-zabbix <=0.0.13
+
 Install
 -------
 
