@@ -82,6 +82,9 @@ class ZabbixPlugin(NotificationPlugin):
 
         send_to_zabbix([metric], host, port)
 
+    def notify_users(self, *args, **kwargs):
+        pass
+
     def notify_about_activity(self, activity):
         if activity.type not in (Activity.SET_RESOLVED, Activity.SET_UNRESOLVED):
             return
