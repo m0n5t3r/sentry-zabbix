@@ -86,4 +86,5 @@ class ZabbixPlugin(NotificationPlugin):
         if activity.type not in (Activity.SET_RESOLVED, Activity.SET_UNRESOLVED):
             return
 
+        log.debug('got activity type %s for group %s', activity.type, activity.group)
         self.post_process(group=activity.group, event=None, is_new=False, is_sample=False)
