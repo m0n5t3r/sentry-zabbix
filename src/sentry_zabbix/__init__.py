@@ -12,4 +12,4 @@ except Exception, e:
 from sentry.plugins import register
 from .plugin import ZabbixPlugin
 
-register(ZabbixPlugin)
+# register(ZabbixPlugin)
