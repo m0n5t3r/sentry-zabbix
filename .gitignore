@@ -12,6 +12,7 @@
 # distutils dirs
 dist/*
 build/*
+src/sentry_zabbix.egg-info
 
 # hidden files
 .*
