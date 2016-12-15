@@ -57,7 +57,7 @@ class ZabbixPlugin(NotificationPlugin):
             return
 
         host = self.get_option('server_host', group.project)
-        port = self.get_option('server_port', group.project)
+        port = int(self.get_option('server_port', group.project))
         prefix = self.get_option('prefix', group.project)
         hostname = self.get_option('hostname', group.project) or socket.gethostname()
         resolve_age = group.project.get_option('sentry:resolve_age', None)
